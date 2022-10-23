@@ -18,25 +18,31 @@ class CharList extends Component {
 
         char: [],
         loading: true,
-        error: false
-
+        error: false,
+        newItemLoading: false,
+        offset: 210,
+        charEnded: false,
+        selectedElem: null
     }
 
     marvelService = new MarvelService();
 
 
-    onCharLoaded = (char) => {
-        console.log(char);
-        this.setState({
-            char: char.map(item => {
-                return ({
-                    name: item.name,
-                    thumbnail: item.thumbnail,
-                    id: item.id
-                })
-            }),
-            loading: false
-        });
+    onCharLoaded = (newChar) => {
+        let ended = false;
+        if (newChar < 9) {
+            ended = true 
+        }
+
+        this.setState(({char, offset}) => (
+            {
+                char: [...char, ...newChar],
+                loading: false,
+                newItemLoading: false,
+                offset: offset + 9,
+                charEnded: ended
+            }
+        ));
     }
 
 
@@ -47,6 +53,19 @@ class CharList extends Component {
         });
     }
 
+    onRequest = (offset) => {
+        this.onCharListLoading()
+        this.marvelService
+        .getAllCharacters(offset)
+        .then(this.onCharLoaded)
+        .catch(this.onError)
+    }
+
+    onCharListLoading = () => {
+        this.setState({
+            newItemLoading: true,
+        })
+    }
 
     updateChar = () => {
 
@@ -60,22 +79,35 @@ class CharList extends Component {
             .catch(this.onError)
     }
 
+    focusSelectedElem = (id) => {
+        this.setState({
+            selectedElem: id
+        })
+    }
+
+
+
     loadingList = (char) => {
-        return (char.map(({name, thumbnail, id}) => <ListItem name={name} thumbnail={thumbnail} key={id} onCharSelected={() => this.props.onCharSelected(id)}/>));
+        return (char.map((item) => <ListItem 
+                                        name={item.name} 
+                                        thumbnail={item.thumbnail} 
+                                        key={item.id} 
+                                        onCharSelected={() => this.props.onCharSelected(item.id)}
+                                        focusSelectedElem={() => this.focusSelectedElem(item.id)}
+                                        elemInUseNumber={item.id}
+                                        selectedElem={this.state.selectedElem}
+                                    />));
     }
 
     componentDidMount() {
         this.updateChar();
     }
 
-    componentDidUpdate() {
-        console.log(this.state.char)
-    }
 
     render() {
 
 
-        let {char, loading, error} = this.state;
+        let {char, loading, error, newItemLoading, offset, charEnded} = this.state;
 
         const errorMassage = error ? <ErrorMassage/> : null;
         const spinner = loading ? <Spinner/> : null;
@@ -89,7 +121,11 @@ class CharList extends Component {
                     {spinner}
                     {content}
                 </ul>
-                <button className="button button__main button__long">
+                <button
+                    style={{"display": charEnded ? "none" : "block"}}
+                    className="button button__main button__long"
+                    disabled={newItemLoading}
+                    onClick={() => this.onRequest(offset)}>
                     <div className="inner">load more</div>
                 </button>
             </div>
@@ -99,10 +135,16 @@ class CharList extends Component {
 
 function ListItem(props) {
 
-    const {name, thumbnail, onCharSelected} = props;
+    const {name, thumbnail, onCharSelected, focusSelectedElem, elemInUseNumber, selectedElem} = props;
+
+    let listClass = elemInUseNumber == selectedElem ? "char__item char__item_selected" : "char__item";
 
     return (
-    <li onClick={onCharSelected} className="char__item">
+    <li onClick={() => {
+        onCharSelected();
+        focusSelectedElem()}}
+        className={listClass}
+    >
         <img src={thumbnail} alt="abyss"/>
         <div className="char__name">{name}</div>
     </li>

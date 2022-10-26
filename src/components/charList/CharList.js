@@ -10,8 +10,6 @@ import './charList.scss';
 const CharList = (props) => {
 
     const [char, setChar] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(false);
     const [newItemLoading, setNewItemLoading] = useState(false);
     const [offset, setOffset] = useState(210);
     const [charEnded, setCharEnded] = useState(false);
@@ -19,7 +17,7 @@ const CharList = (props) => {
 
 
 
-    const marvelService = new MarvelService();
+    const {loading, error, getAllCharacters} = MarvelService();
 
 
     const onCharLoaded = (newChar) => {
@@ -30,39 +28,28 @@ const CharList = (props) => {
 
 
         setChar((char) => [...char, ...newChar]);
-        setLoading(false);
         setNewItemLoading(false);
         setOffset(offset => (offset + 9));
         setCharEnded(ended);
     }
 
 
-    const onError = () => {
-        setLoading(false);
-        setError(true);
-    }
 
     const onRequest = (offset) => {
-        onCharListLoading()
-        marvelService
-            .getAllCharacters(offset)
+
+        setNewItemLoading(true)
+
+        getAllCharacters(offset)
             .then(onCharLoaded)
-            .catch(onError)
     }
 
-    const onCharListLoading = () => {
-        setNewItemLoading(true);
-    }
+
 
     const updateChar = () => {
 
 
-        setLoading(true);
-
-        marvelService
-            .getAllCharacters()
+        getAllCharacters()
             .then(onCharLoaded)
-            .catch(onError)
     }
 
     const focusSelectedElem = (id) => {
@@ -91,8 +78,8 @@ const CharList = (props) => {
 
 
         const errorMassage = error ? <ErrorMassage/> : null;
-        const spinner = loading ? <Spinner/> : null;
-        const content = !(loading || error) ? loadingList(char) : null;
+        const spinner = loading && !newItemLoading ? <Spinner/> : null;
+        // const content = !(loading || error) ? loadingList(char) : null;
 
 
         return (
@@ -100,7 +87,7 @@ const CharList = (props) => {
                 <ul className="char__grid">
                     {errorMassage}
                     {spinner}
-                    {content}
+                    {loadingList(char)}
                 </ul>
                 <button
                     style={{"display": charEnded ? "none" : "block"}}

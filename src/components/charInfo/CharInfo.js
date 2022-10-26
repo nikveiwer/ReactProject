@@ -6,49 +6,37 @@ import ErrorMassage from '../errorMassage/ErrorMassage';
 import Skeleton from "../skeleton/Skeleton"
 
 import './charInfo.scss';
-import thor from '../../resources/img/thor.jpeg';
 
 const CharInfo = (props) => {
 
 
     const [char, setChar] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(false);
 
 
-    const marvelService = new MarvelService();
+    const {loading, error, getCharacter, clearError} = MarvelService();
 
     useEffect(() => {
         updateChar()
     }, [props.charId])
 
     const updateChar = () => {
+
         const {charId} = props
         if (!charId) {
             return;
         }
 
-        setLoading(true);
+        clearError();
 
-        marvelService
-            .getCharacter(charId)
+        getCharacter(charId)
             .then(onCharLoaded)
-            .catch(onError)
     }
 
 
     const onCharLoaded = (char) => {
 
         setChar(char);
-        setLoading(false);
     }
-
-    const onError = () => {
-
-        setLoading(false);
-        setError(true);
-    }
-
 
 
 

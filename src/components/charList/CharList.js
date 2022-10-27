@@ -35,9 +35,9 @@ const CharList = (props) => {
 
 
 
-    const onRequest = (offset) => {
+    const onRequest = (offset, initial) => {
 
-        setNewItemLoading(true)
+        initial ? setNewItemLoading(false) : setNewItemLoading(true)
 
         getAllCharacters(offset)
             .then(onCharLoaded)
@@ -45,12 +45,6 @@ const CharList = (props) => {
 
 
 
-    const updateChar = () => {
-
-
-        getAllCharacters()
-            .then(onCharLoaded)
-    }
 
     const focusSelectedElem = (id) => {
 
@@ -72,7 +66,7 @@ const CharList = (props) => {
     }
 
     useEffect(() => {
-        updateChar();
+        onRequest(offset, true);
     }, [])
 
 
@@ -93,7 +87,7 @@ const CharList = (props) => {
                     style={{"display": charEnded ? "none" : "block"}}
                     className="button button__main button__long"
                     disabled={newItemLoading}
-                    onClick={() => onRequest(offset)}>
+                    onClick={() => onRequest(offset, false)}>
                     <div className="inner">load more</div>
                 </button>
             </div>

@@ -66,11 +66,13 @@ const RandomChar = () => {
 const View = ({char}) => {
 
     const {name, descr, thumbnail, homepage, wiki} = char;
+    let realDescr
 
     if (typeof(descr) == "string" && descr.length >= 230 ) {
-        descr = descr.slice(0, 227) + "..."
+        realDescr = descr.slice(0, 227) + "..."
      }
-     const realDescr = descr ? descr : "there is no description yet"
+     
+    realDescr = descr ? descr : "there is no description yet"
 
     return (
         <div className="randomchar__block">

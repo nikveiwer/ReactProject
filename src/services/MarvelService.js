@@ -51,7 +51,7 @@ const MarvelService = () => {
             link: comic.urls[0].url,
             thumbnail: comic.thumbnail.path + "." + comic.thumbnail.extension,
             title: comic.title,
-            price: comic.prices.price
+            price: comic.prices[0].price ? comic.prices[0].price : "NOT AVAILABLE"
         }
     }
 

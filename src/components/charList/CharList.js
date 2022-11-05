@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { Transition } from "react-transition-group"
 
 import MarvelService from "../../services/MarvelService";
 import Spinner from "../spinner/Spinner";
@@ -96,19 +97,56 @@ const CharList = (props) => {
 
 function ListItem(props) {
 
+    const [doAnimation, setDoAnimation] = useState(false);
+
+    useEffect(() => {
+        setTimeout(() => {
+            setDoAnimation(true)
+        }, 300)
+    }, []);
+
     const {name, thumbnail, onCharSelected, focusSelectedElem, elemInUseNumber, selectedElem} = props;
 
     let listClass = elemInUseNumber == selectedElem ? "char__item char__item_selected" : "char__item";
 
+    console.log(props);
+
+    const duration = 300;
+
+    const defaultStyle = {
+        transition: `all ${duration}ms ease-in-out`,
+        opacity: 0,
+        visibility: "hidden"
+    }
+
+    const transitionStyles = {
+        entering: { opacity: 1, visibility: "visible" },
+        entered:  { opacity: 1, visibility: "visible" },
+        exiting:  { opacity: 0, visibility: "hidden" },
+        exited:  { opacity: 0, visibility: "hidden" },
+    };
+
     return (
-    <li onClick={() => {
-        onCharSelected();
-        focusSelectedElem()}}
-        className={listClass}
-    >
-        <img src={thumbnail} alt="abyss"/>
-        <div className="char__name">{name}</div>
-    </li>
+        <Transition
+            in={doAnimation}
+            timeout={duration}>
+            {state => (
+                    <li style={{
+                        ...defaultStyle,
+                        ...transitionStyles[state]
+                        }}
+                        onClick={() => {
+                        onCharSelected();
+                        focusSelectedElem()}}
+                        className={listClass}
+                    >
+                        <img src={thumbnail} alt="abyss"/>
+                        <div className="char__name">{name}</div>
+                </li>
+            )}
+
+
+        </Transition>
     )
 }
 

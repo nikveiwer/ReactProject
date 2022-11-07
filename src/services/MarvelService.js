@@ -65,8 +65,14 @@ const MarvelService = () => {
         }
     }
 
+    const getIdByName = async (name) => {
+        const res = await request(`${_apiBase}characters?name=${name}&${_apiKey}`);
 
-    return {loading, error, getAllCharacters, getCharacter, clearError, getAllComics, getComic}
+        return (res.data.results[0] ? res.data.results[0].id : null)
+    }
+
+
+    return {loading, error, getAllCharacters, getCharacter, clearError, getAllComics, getComic, getIdByName}
 }
 
 export default MarvelService;

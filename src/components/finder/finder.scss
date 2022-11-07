@@ -1,0 +1,52 @@
+.finder {
+    padding: 25px;
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.25);
+    position: absolute;
+    left: 675px;
+    top: 650px;
+    z-index: 5;
+    background-color: #fff;
+    width: 425px;
+    min-height: 127px;
+    &__title {
+        font-family: 'Roboto Condensed';
+        font-style: normal;
+        font-weight: 700;
+        font-size: 18px;
+        color: #000000;
+        margin-bottom: 15px;
+    }
+    &__form {
+        position: relative;
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        input {
+            width: 250px;
+            height: 38px;
+            background: #FFFFFF;
+            border: none;
+            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.25);
+            padding-left: 10px;
+        }
+    }
+    &__error {
+        // position: absolute;
+        top: 50%;
+        font-family: 'Roboto Condensed';
+        font-style: normal;
+        font-weight: 700;
+        font-size: 18px;
+        color: #9F0013;
+        margin-top: 25px;
+    }
+    &__loading {
+        font-family: 'Roboto Condensed';
+        font-style: normal;
+        font-weight: 700;
+        font-size: 18px;
+        color: #000000;
+        margin-top: 25px;
+    }
+
+}

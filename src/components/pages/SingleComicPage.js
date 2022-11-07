@@ -8,12 +8,12 @@ import ErrorMassage from '../errorMassage/ErrorMassage';
 import './singleComicPage.scss';
 
 
-const SingleComicPage = () => {
+const SingleComicPage = (props) => {
     const {comicId} = useParams();
 
     const [comic, setComic] = useState(null);
 
-    const {loading, error, getComic, clearError} = MarvelService();
+    const {loading, error, getComic, getCharacter, clearError} = MarvelService();
 
     useEffect(() => {
         updateComic()

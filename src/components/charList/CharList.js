@@ -109,7 +109,6 @@ function ListItem(props) {
 
     let listClass = elemInUseNumber == selectedElem ? "char__item char__item_selected" : "char__item";
 
-    console.log(props);
 
     const duration = 300;
 

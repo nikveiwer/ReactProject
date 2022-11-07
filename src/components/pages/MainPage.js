@@ -3,6 +3,7 @@ import { useState } from "react";
 import RandomChar from "../randomChar/RandomChar";
 import CharList from "../charList/CharList";
 import CharInfo from "../charInfo/CharInfo";
+import Finder from "../finder/Finder";
 
 import decoration from '../../resources/img/vision.png';
 
@@ -22,6 +23,7 @@ const MainPage = () => {
             <div className="char__content">
                 <CharList onCharSelected={onCharSelected}/>
                 <CharInfo charId={selectedChar}/>
+                <Finder></Finder>
             </div>
             <img className="bg-decoration" src={decoration} alt="vision"/>
         </>

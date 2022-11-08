@@ -57,10 +57,10 @@ const MarvelService = () => {
             id: comic.id,
             link: comic.urls[0].url,
             thumbnail: comic.thumbnail.path + "." + comic.thumbnail.extension,
-            title: comic.title,
+            name: comic.title,
             price: comic.prices[0].price ? comic.prices[0].price : "NOT AVAILABLE",
             pageCount: comic.pageCount ? `${comic.pageCount} р.` : "No info",
-            description: comic.description || "There is no description",
+            descr: comic.description || "There is no description",
             language: comic.textObjects.language || "en-us"
         }
     }

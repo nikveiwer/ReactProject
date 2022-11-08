@@ -48,5 +48,18 @@
         color: #000000;
         margin-top: 25px;
     }
+    &__founded {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 15px;
+        span {
+            display: block;
+            font-family: 'Roboto Condensed';
+            font-style: normal;
+            font-weight: 700;
+            font-size: 18px;
+            color: #03710E;
+        }
+    }
 
 }

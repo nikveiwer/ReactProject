@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
-import { Formik, Form, Field, ErrorMessage} from "formik";
+import { useState } from 'react';
+import { Formik, Form, Field, ErrorMessage as FormikErrorMessage} from "formik";
+import { Link } from "react-router-dom"
 
 
 import ErrorMassage from '../errorMassage/ErrorMassage';
@@ -23,14 +24,12 @@ const Finder = () => {
 
     const [foundedId, setFoundedId] = useState(null);
     const [submitedOnce, setSubmitedOnce] = useState(false);
+    const [charName, setCharName] = useState(null);
+
 
     const {loading, error, getIdByName, clearError} = MarvelService();
 
-    // <Link to={`/comics/${id}`}>
-    // <img src={thumbnail} alt="ultimate war" className="comics__item-img"/>
-    // <div className="comics__item-name">{title}</div>
-    // <div className="comics__item-price">{price}$</div>
-    // </Link>
+
 
 
     const errorMassage = error ? <ErrorMassage/> : null;
@@ -40,7 +39,17 @@ const Finder = () => {
                         </div>
                         ) : null;
 
-    const link =  foundedId ? foundedId : <div className="finder__error">The character was not found. Check the name and try again</div>;
+    const founded = (
+        <div className="finder__founded">
+            <span>{`There is! Visit ${charName} page?`}</span>
+            <Link to={`/chars/${foundedId}`} className="button button__secondary">
+                    <div className="inner">To Page</div>
+            </Link>
+        </div>
+    )
+
+
+    const link =  foundedId ? founded : <div className="finder__error">The character was not found. Check the name and try again</div>;
     let content = (!loading && !error && submitedOnce) ? link : null;
 
 
@@ -56,6 +65,7 @@ const Finder = () => {
                     validate={validate}
                     onSubmit = {values => {
                         setSubmitedOnce(true);
+                        setCharName(values.char);
                         getIdByName(values.char)
                             .then(setFoundedId)
                         
@@ -72,15 +82,18 @@ const Finder = () => {
                         <button type="submit" className="button button__main">
                             <div className="inner">Find</div>
                         </button>
-                        <ErrorMessage className="finder__error" name="char" component="div"/>
+                        <FormikErrorMessage className="finder__error" name="char" component="div"/>
                         {errorMassage}
                         {spinner}
-                        {content}
                     </Form>
+                    
 
                 </Formik>
+                {content}
         </div>
     )
 }
+
+
 
 export default Finder;

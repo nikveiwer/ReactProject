@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react';
 
 import MarvelService from '../../services/MarvelService';
-import Spinner from '../spinner/Spinner';
-import ErrorMassage from '../errorMassage/ErrorMassage';
-import Skeleton from "../skeleton/Skeleton"
+import setContent from '../../utils/setContent';
 
 import './charInfo.scss';
 
@@ -13,9 +11,8 @@ const CharInfo = (props) => {
     const [char, setChar] = useState(null);
 
 
-    const {loading, error, getCharacter, clearError} = MarvelService();
+    const {process, setProcess, getCharacter, clearError} = MarvelService();
 
-    console.log(char);
 
     useEffect(() => {
         updateChar()
@@ -32,6 +29,7 @@ const CharInfo = (props) => {
 
         getCharacter(charId)
             .then(onCharLoaded)
+            .then(() => setProcess("confirmed"))
     }
 
 
@@ -42,25 +40,28 @@ const CharInfo = (props) => {
 
 
 
-        const skeleton = char || loading || error ? null : <Skeleton/>
-        const errorMassage = error ? <ErrorMassage/> : null;
-        const spinner = loading ? <Spinner/> : null;
-        const content = !(loading || error || !char) ? <View char={char}/> : null;
 
-        return (
-            <div className="char__info">
-                {skeleton}
-                {errorMassage}
-                {spinner}
-                {content}
-            </div>
-        )
+
+    // const skeleton = char || loading || error ? null : <Skeleton/>
+    // const errorMassage = error ? <ErrorMassage/> : null;
+    // const spinner = loading ? <Spinner/> : null;
+    // const content = !(loading || error || !char) ? <View char={char}/> : null;
+
+    return (
+        <div className="char__info">
+            {/* {skeleton}
+            {errorMassage}
+            {spinner}
+            {content} */}
+            {setContent(process, View, char)}
+        </div>
+    )
 
 }
 
 
-const View = ({char}) => {
-    const {name, description, thumbnail, homepage, wiki, comics} = char;
+const View = ({data}) => {
+    const {name, description, thumbnail, homepage, wiki, comics} = data;
 
 
 

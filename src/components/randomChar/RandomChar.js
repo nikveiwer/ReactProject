@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import MarvelService from "../../services/MarvelService";
 import Spinner from "../spinner/Spinner";
 import ErrorMassage from "../errorMassage/ErrorMassage";
+import setContent from "../../utils/setContent";
 
 import './randomChar.scss';
 import mjolnir from '../../resources/img/mjolnir.png';
@@ -12,7 +13,7 @@ const RandomChar = () => {
     const [char, setChar] = useState({});
 
 
-    const {loading, error, getCharacter, clearError} = MarvelService();
+    const {loading, error, process, setProcess, getCharacter, clearError} = MarvelService();
 
     const onCharLoaded = (char) => {
         setChar(char);
@@ -26,6 +27,7 @@ const RandomChar = () => {
 
         getCharacter(id)
             .then(onCharLoaded)
+            .then(() => setProcess("confirmed"));
     }
 
 
@@ -35,16 +37,17 @@ const RandomChar = () => {
 
 
 
-    const errorMassage = error ? <ErrorMassage/> : null;
-    const spinner = loading ? <Spinner/> : null;
-    const content = !(loading || error) ? <View char={char}/> : null;
+    // const errorMassage = error ? <ErrorMassage/> : null;
+    // const spinner = loading ? <Spinner/> : null;
+    // const content = !(loading || error) ? <View char={char}/> : null;
 
 
     return (
         <div className="randomchar">
-            {errorMassage}
+            {/* {errorMassage}
             {spinner}
-            {content}
+            {content} */}
+            {setContent(process, View, char)}
             <div className="randomchar__static">
                 <p className="randomchar__title">
                     Random character for today!<br/>
@@ -63,9 +66,9 @@ const RandomChar = () => {
 
 }
 
-const View = ({char}) => {
+const View = ({data}) => {
 
-    const {name, descr, thumbnail, homepage, wiki} = char;
+    const {name, descr, thumbnail, homepage, wiki} = data;
     let realDescr
 
     if (typeof(descr) == "string" && descr.length >= 230 ) {

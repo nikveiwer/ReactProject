@@ -1,5 +1,4 @@
-import { useState, useEffect, useRef } from "react";
-import { Transition } from "react-transition-group"
+import { useState, useEffect } from "react";
 
 import MarvelService from "../../services/MarvelService";
 import Spinner from "../spinner/Spinner";
@@ -8,6 +7,27 @@ import ErrorMassage from "../errorMassage/ErrorMassage";
 
 import './charList.scss';
 
+const setListContent = (process, Component, data, newItemLoading) => {
+    switch (process) {
+        case "waiting":
+            return <Spinner/>;
+            break;
+        case "loading":
+            return newItemLoading ? <Component data={data}/> : <Spinner/>;
+            break;
+        case "confirmed":
+            return <Component data={data}/>;
+            break;
+        case "error":
+            return <ErrorMassage/>;
+            break;
+        default:
+            throw new Error("Unexpected process state")
+        
+    }
+}
+
+
 const CharList = (props) => {
 
     const [char, setChar] = useState([]);
@@ -15,10 +35,11 @@ const CharList = (props) => {
     const [offset, setOffset] = useState(210);
     const [charEnded, setCharEnded] = useState(false);
     const [selectedElem, setSelectedElem] = useState(null);
+    
 
 
 
-    const {loading, error, getAllCharacters} = MarvelService();
+    const {process, setProcess, getAllCharacters} = MarvelService();
 
 
     const onCharLoaded = (newChar) => {
@@ -41,6 +62,7 @@ const CharList = (props) => {
 
         getAllCharacters(offset)
             .then(onCharLoaded)
+            .then(() => setProcess("confirmed"))
     }
 
 
@@ -53,8 +75,8 @@ const CharList = (props) => {
 
 
 
-    const loadingList = (char) => {
-        return (char.map((item) => <ListItem 
+    const loadingList = ({data}) => {
+        return (data.map((item) => <ListItem 
                                         name={item.name} 
                                         thumbnail={item.thumbnail} 
                                         key={item.id} 
@@ -71,17 +93,18 @@ const CharList = (props) => {
 
 
 
-        const errorMassage = error ? <ErrorMassage/> : null;
-        const spinner = loading && !newItemLoading ? <Spinner/> : null;
+        // const errorMassage = error ? <ErrorMassage/> : null;
+        // const spinner = loading && !newItemLoading ? <Spinner/> : null;
         // const content = !(loading || error) ? loadingList(char) : null;
 
 
         return (
             <div className="char__list">
                 <ul className="char__grid">
-                    {errorMassage}
+                    {/* {errorMassage}
                     {spinner}
-                    {loadingList(char)}
+                    {loadingList(char)} */}
+                    {setListContent(process, loadingList, char, newItemLoading)}
                 </ul>
                 <button
                     style={{"display": charEnded ? "none" : "block"}}
@@ -97,55 +120,25 @@ const CharList = (props) => {
 
 function ListItem(props) {
 
-    const [doAnimation, setDoAnimation] = useState(false);
-
-    useEffect(() => {
-        setTimeout(() => {
-            setDoAnimation(true)
-        }, 300)
-    }, []);
 
     const {name, thumbnail, onCharSelected, focusSelectedElem, elemInUseNumber, selectedElem} = props;
 
     let listClass = elemInUseNumber == selectedElem ? "char__item char__item_selected" : "char__item";
 
 
-    const duration = 300;
-
-    const defaultStyle = {
-        transition: `all ${duration}ms ease-in-out`,
-        opacity: 0,
-        visibility: "hidden"
-    }
-
-    const transitionStyles = {
-        entering: { opacity: 1, visibility: "visible" },
-        entered:  { opacity: 1, visibility: "visible" },
-        exiting:  { opacity: 0, visibility: "hidden" },
-        exited:  { opacity: 0, visibility: "hidden" },
-    };
 
     return (
-        <Transition
-            in={doAnimation}
-            timeout={duration}>
-            {state => (
-                    <li style={{
-                        ...defaultStyle,
-                        ...transitionStyles[state]
-                        }}
-                        onClick={() => {
-                        onCharSelected();
-                        focusSelectedElem()}}
-                        className={listClass}
-                    >
-                        <img src={thumbnail} alt="abyss"/>
-                        <div className="char__name">{name}</div>
-                </li>
-            )}
 
+        <li
+            onClick={() => {
+            onCharSelected();
+            focusSelectedElem()}}
+            className={listClass}
+            >
+            <img src={thumbnail} alt="abyss"/>
+            <div className="char__name">{name}</div>
+        </li>
 
-        </Transition>
     )
 }
 

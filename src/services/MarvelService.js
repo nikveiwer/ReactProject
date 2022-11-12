@@ -6,7 +6,7 @@ const MarvelService = () => {
     const _apiKey = `apikey=7f05223a4be737d9b018fe7e80f41d58`;
     const _baseOffset = 210;
 
-    const {loading, error, request, clearError} = useHttp();
+    const {loading, error, process, setProcess, request, clearError} = useHttp();
 
 
     const getAllCharacters = async (offset = _baseOffset) => {
@@ -72,7 +72,7 @@ const MarvelService = () => {
     }
 
 
-    return {loading, error, getAllCharacters, getCharacter, clearError, getAllComics, getComic, getIdByName}
+    return {loading, error, process, setProcess, getAllCharacters, getCharacter, clearError, getAllComics, getComic, getIdByName}
 }
 
 export default MarvelService;

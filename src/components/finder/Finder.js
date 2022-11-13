@@ -9,6 +9,30 @@ import MarvelService from '../../services/MarvelService';
 
 import './finder.scss';
 
+const setFinderContent = (process, Component, data) => {
+    switch (process) {
+        case "waiting":
+            return null
+            break;
+        case "loading":
+            return <div className="finder__loading">Loading...</div>;
+            break;
+        case "notFounded":
+            return <div className="finder__error">The character was not found. Check the name and try again</div>;
+            break;
+        case "founded":
+            return <Component data={data}/>;
+            break;
+        case "error":
+            return <ErrorMassage/>;
+            break;
+        default:
+            throw new Error("Unexpected process state")
+        
+    }
+}
+
+
 const validate = values => {
     const errors = {}
 
@@ -23,34 +47,10 @@ const validate = values => {
 const Finder = () => {
 
     const [foundedId, setFoundedId] = useState(null);
-    const [submitedOnce, setSubmitedOnce] = useState(false);
     const [charName, setCharName] = useState(null);
 
 
-    const {loading, error, getIdByName, clearError} = MarvelService();
-
-
-
-
-    const errorMassage = error ? <ErrorMassage/> : null;
-    const spinner = loading ? (
-                        <div className="finder__loading">
-                            Loading...
-                        </div>
-                        ) : null;
-
-    const founded = (
-        <div className="finder__founded">
-            <span>{`There is! Visit ${charName} page?`}</span>
-            <Link to={`/chars/${foundedId}`} className="button button__secondary">
-                    <div className="inner">To Page</div>
-            </Link>
-        </div>
-    )
-
-
-    const link =  foundedId ? founded : <div className="finder__error">The character was not found. Check the name and try again</div>;
-    let content = (!loading && !error && submitedOnce) ? link : null;
+    const {process, setProcess, getIdByName} = MarvelService();
 
 
 
@@ -64,10 +64,17 @@ const Finder = () => {
                     }}
                     validate={validate}
                     onSubmit = {values => {
-                        setSubmitedOnce(true);
                         setCharName(values.char);
                         getIdByName(values.char)
-                            .then(setFoundedId)
+                            .then(id => {
+                                if (id) {
+                                    setFoundedId(id);
+                                    setProcess("founded")
+                                } else {
+                                    setProcess("notFounded")
+                                }
+                            })
+
                         
                     }}>
                     
@@ -83,13 +90,23 @@ const Finder = () => {
                             <div className="inner">Find</div>
                         </button>
                         <FormikErrorMessage className="finder__error" name="char" component="div"/>
-                        {errorMassage}
-                        {spinner}
                     </Form>
                     
 
                 </Formik>
-                {content}
+                {setFinderContent(process, FoundedComponent, {charName, foundedId})}
+        </div>
+    )
+}
+
+const FoundedComponent = ({data: {charName, foundedId}}) => {
+
+    return (
+        <div className="finder__founded">
+        <span>{`There is! Visit ${charName} page?`}</span>
+        <Link to={`/chars/${foundedId}`} className="button button__secondary">
+                <div className="inner">To Page</div>
+        </Link>
         </div>
     )
 }
